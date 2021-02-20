@@ -1,0 +1,53 @@
+#Primero necesitamos ya tener configurado NetworkManager(derivados), en mi caso esta corriendo dhcpcd
+
+
+#En primer lugar crear el archivo de configuración de servicio de systemd, sustituyendo <interface> con el nombre de la interfaz adecuada: 
+/etc/conf.d/network@<interface>
+--------------------------------
+address=192.168.0.15
+netmask=24
+broadcast=192.168.0.255
+gateway=192.168.0.1
+
+
+#Cree un archivo de unidad de systemd: 
+/etc/systemd/system/network@.service
+-------------------------------------
+[Unit]
+Description=Network connectivity (%i)
+Wants=network.target
+Before=network.target
+BindsTo=sys-subsystem-net-devices-%i.device
+After=sys-subsystem-net-devices-%i.device
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+EnvironmentFile=/etc/conf.d/network@%i
+
+ExecStart=/usr/bin/ip link set dev %i up
+ExecStart=/usr/bin/ip addr add ${address}/${netmask} broadcast ${broadcast} dev %i
+ExecStart=/usr/bin/ip route add default via ${gateway}
+
+ExecStop=/usr/bin/ip addr flush dev %i
+ExecStop=/usr/bin/ip link set dev %i down
+
+[Install]
+WantedBy=multi-user.target
+
+
+#Active la unidad e iníciela, proporcionando el nombre de la interfaz: (recordar cambiar eth0 por su T.red)
+systemctl enable network@eth0.service
+systemctl start network@eth0.service
+
+
+#Para probar cualquier configuración reinicie el ordenador, o como root, ejecute: (recordar cambiar eth0 por su T.red)
+systemctl restart dhcpcd@eth0
+
+
+#configurar DNS(en caso que por X configuracion no los halla creado antes), en este ejemplo se usaran los dns de google
+/etc/resolv.conf
+----------------------
+nameserver 8.8.8.8
+nameserver 8.8.4.4
+
