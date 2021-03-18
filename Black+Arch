@@ -1,0 +1,22 @@
+#Instalacion de Black Arch junto al sistema base Arch(o distros similares)
+Pacman -Syyu
+Pacman -S curl
+# Run https://blackarch.org/strap.sh as root and follow the instructions.
+$ curl -O https://blackarch.org/strap.sh 
+# The SHA1 sum should match: 9c15f5d3d6f3f8ad63a6927ba78ed54f1a52176b strap.sh
+$ sha1sum strap.sh 
+# Set execute bit
+$ chmod +x strap.sh 
+# Run strap.sh
+$ sudo ./strap.sh 
+
+Después modificar lo siguiente
+En: /etc/pacman.conf  >> en multilib eliminar los#
+
+Al final del archivo agregar 
+[archlinuxfr]
+SigLevel = Never
+Server = http://repo.archlinux.fr/$arch
+
+Ir a /etc/pamcan.d/blackarch-mirrorlist
+Configurar los respositorios mas cercanos
