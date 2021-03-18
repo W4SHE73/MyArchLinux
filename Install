@@ -1,0 +1,57 @@
+#considerando un sitema UEFI para la instalacion en un Desktop
+#lo primero, es crear las particiones, usamos el asistende y seleccionamos el modo
+#para los ejemplos, usaremos sda pero esto pueda variar a sdb o sdc dependiendo de cuantos discos tengamos
+cfdisk "selecionar disco"
+gpt "formato segun corresponda"
+512M (EFI/BOT)
+4G(SWAP)
+X (Linux x86-64 root)
+
+#puedes dividir la partiricon X en 2 (1) de 20G para /root y (2)el resto para /home
+#tabla de formato de particiones
+mkfs.fat -F32 /dev/sdaX (seleccionamos el espacio efi)
+mkswap /dev/sdaY (seleccionamos el swap) y activamos con swapon /dev/sdaY (podemos ver si quedo activado con el comando free)
+mkfs.ext4 /dev/sdaZ (recordar hacerlo 2 veces si dividimos en /root y /home)
+
+#montamos las particiones 
+mount /dev/sdaZ /mnt
+mkdir -p /mnt/boot
+mount /dev/sdaX /mnt/boot
+
+instaladon los paquetes ecenciales
+pacstrap /mnt base linux-lts linux-firmware NetworkManager dhcpcd nano grub efibootmgr
+
+genfstab -U /mnt >> /mnt/etc/fstab
+comprobar el archivo resultante en: /mnt/etc/fstab
+
+arch-chroot /mnt
+montando la raiz al nuevo sistema
+
+modo EUFI boot
+grub-install –-target=x86_64-efi –-efi-directory=/boot -–bootloader-id=ArchLinux
+
+grub-install –-target=x86_64-efi –-efi-directory=/boot –removable
+modificar el loglevel y eliminar quiet en: nano /etc/default/grub
+grub-mkconfig -o /boot/grub/grub.cfg
+
+systemctl enable NetworkManager
+Post-install
+Useradd -m “nombre de usuario”
+Passwd “nombre de usuario”
+
+WM i3
+Pacman -S xorg xorg-xinit xorg-server  -> para correr interfaz grafica
+Pacman -S ligthDM ligthdm-gtk-greeter ligthdm-gtk-greeter-setting
+Pacman -S nvidia-lts -> driver NVIDIA con soporte LTS del kernel
+Pacman -S alsa alsa-utils pulseaudio pavucontrol
+Pacman -S i3 1 2 3  -> wm
+Pacman -S kitty
+# ir a nano -w .xinitrc y agregar exec i3, al salir ejecutar startx
+Pacman -S pcmanfm  -> para usar carpetas
+
+Después toca configurar la Shell
+Diriguete a la ruta>> .config/i3/config
+Ir hasta >> “ start a terminal” y cambiarla por kitty
+
+pacman -S zsh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
