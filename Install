@@ -3,7 +3,7 @@
 #para los ejemplos, usaremos sda pero esto pueda variar a sdb o sdc dependiendo de cuantos discos tengamos
 cfdisk "selecionar disco"
 gpt "formato segun corresponda"
-512M (EFI/BOT)
+260M (EFI/BOT)
 4G(SWAP)
 X (Linux x86-64 root)
 
@@ -45,7 +45,12 @@ Pacman -S ligthDM ligthdm-gtk-greeter ligthdm-gtk-greeter-setting
 Pacman -S nvidia-lts -> driver NVIDIA con soporte LTS del kernel
 Pacman -S alsa alsa-utils pulseaudio pavucontrol
 Pacman -S i3 1 2 3  -> wm
-Pacman -S kitty
+
+https://aur.archlinux.org/yay.git
+cd yay
+makepkg -si
+yay -S st
+
 # ir a nano -w .xinitrc y agregar exec i3, al salir ejecutar startx
 Pacman -S pcmanfm  -> para usar carpetas
 
