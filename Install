@@ -49,14 +49,16 @@ Pacman -S i3 1 2 3  -> wm
 https://aur.archlinux.org/yay.git
 cd yay
 makepkg -si
-yay -S st
+git clone https://git.suckless.org/st
+cd st
+make clean install
 
 # ir a nano -w .xinitrc y agregar exec i3, al salir ejecutar startx
 Pacman -S pcmanfm  -> para usar carpetas
 
 Después toca configurar la Shell
 Diriguete a la ruta>> .config/i3/config
-Ir hasta >> “ start a terminal” y cambiarla por kitty
+Ir hasta >> “ start a terminal” y cambiarla por st
 
 pacman -S zsh
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
